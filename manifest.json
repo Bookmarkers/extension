@@ -1,0 +1,31 @@
+{
+    "manifest_version": 2,
+    "name": "Testing Bookmarks",
+    "description": "We are testing chrome native bookmark editing/sorting",
+    "version": "1.0",
+    "page_action": {
+        "default_popup": "popup.html"
+    },
+    "background": {
+        "scripts": [
+            "bg.js"
+        ]
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*/*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_end"
+        }
+    ],
+    "permissions": [
+        "tabs",
+        "bookmarks",
+        "http://*/*",
+        "https://*/*"
+    ]
+}

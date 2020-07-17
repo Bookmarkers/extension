@@ -1,24 +1,59 @@
-// const text = document.querySelectorAll('h1, h2, h3, h4, h5, p, li, td, caption, span, a')
+// enable redirect
 
-// for (let i = 0; i < text.length; i++) {
-//     if (text[i].innerHTML.includes('President Donald Trump')) {
-//         text[i].innerHTML = text[i].innerHTML.replace('President Donald Trump', 'The Dark Lord')
-// }
-const blockedUrls = ['twitter.com', 'instagram.com']
+let host;
+if (process.env.NODE_ENV === "development") {
+  host = "http://localhost:8080";
+} else {
+  host = "http://markjoy.herokuapp.com";
+}
 
-
-// Logic implementation: no one can block the redirect page cause it can cause infinite loop and doesn't make sense.
-// I.e. need to check if user is blocking our SPA page and/or the redirection page and not allow for it in the model?
-// logic problem 2: correctly match against the canonicalized URLs stored in bookmarks created with the bookmarks API.
-// i.e. trimming or adding of forward slashes for regexing the url later.
+function fetchUserBlocked() {
+  fetch(`${host}/auth/me`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json'
+    }
+  })
+    .then(response => response.text())
+    .then(text => (text ? JSON.parse(text) : {}))
+    .then(user => {
+      if (user.id) {
+        fetch(`${host}/api/blocked/user/${user.id}`, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(data => data.map(blocked => blocked.url))
+          .then(blockedUrls =>
+            window.localStorage.setItem(
+              'blockedUrls',
+              JSON.stringify(blockedUrls)
+            )
+          )
+          .catch(error => console.log(error))
+      } else {
+        throw Error("You're not logged into bookmarq.")
+      }
+    })
+    .catch(error =>
+      console.error(
+        "Dear bookmarq user, something went wrong and we couldn't fetch your blocked urls! Here is the error message: " +
+          error
+      )
+    )
+}
 
 window.onload = function() {
-    // console.log(chrome.bookmarks.getTree())
-    if (window.location.href.indexOf("google.com") > -1) {
-    // if (blockedUrls.includes(window.location.href)) {
-        window.location.replace('https://localhost:8080');
-        // alert("your url contains the name twitter");
-      }
-//         window.location.replace('https://developer.mozilla.org/en-US/docs/Web/API/Location.reload');
-//     }
+  document.cookie = 'SameSite=None; Secure'
+
+  fetchUserBlocked()
+
+  const blockedUrls = window.localStorage.getItem('blockedUrls')
+  if (blockedUrls) {
+    if (blockedUrls.indexOf(window.location.href) > -1) {
+      window.location.replace('http://localhost:8080/home')
+    }
+  }
 }

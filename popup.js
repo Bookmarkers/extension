@@ -44,7 +44,7 @@ window.onload = async () => {
         processNode(child);
       });
     }
-    if (node.url && node.id === '107') {
+    if (node.url) {
       chromeMarks.push({
         url: node.url,
         title: node.title,

@@ -3,9 +3,9 @@ let user;
 let chromeMarks = [];
 
 // if (process.env.NODE_ENV === "development") {
-  host = "http://localhost:8080";
+host = "http://localhost:8080";
 // } else {
-  // host = "http://markjoy.herokuapp.com";
+// host = "http://markjoy.herokuapp.com";
 // }
 
 async function fetchUser() {
@@ -48,7 +48,10 @@ window.onload = async () => {
       chromeMarks.push({
         url: node.url,
         title: node.title,
-        imageUrl: node.url + "favicon.ico",
+        imageUrl:
+          node.url[node.url.length - 1] === "/"
+            ? node.url + "favicon.ico"
+            : node.url + "/favicon.ico",
         userId: user.id,
         categoryId: 6,
       });
@@ -104,7 +107,7 @@ let current = { active: true, lastFocusedWindow: true };
 
 function deletingCallback(tabs) {
   let currentTab = tabs[0];
-  deleteData("http://localhost:8080/api/bookmarks", {
+  deleteData(`${host}/api/bookmarks`, {
     url: currentTab.url,
     userId: user.id,
   }).then((data) => {
@@ -114,7 +117,7 @@ function deletingCallback(tabs) {
 
 function addingCallback(tabs) {
   let currentTab = tabs[0];
-  postData("http://localhost:8080/api/bookmarks", {
+  postData(`${host}/api/bookmarks`, {
     url: currentTab.url,
     title: currentTab.title,
     imageUrl: currentTab.favIconUrl,
@@ -134,4 +137,4 @@ document.getElementById("do-delete").onclick = () => {
 };
 
 document.getElementById("do-sync").onclick = () =>
-  massPostData("http://localhost:8080/api/bookmarks/bulk", chromeMarks);
+  massPostData(`${host}/api/bookmarks/bulk`, chromeMarks);

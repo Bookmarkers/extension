@@ -2,11 +2,11 @@ let host;
 let user;
 let chromeMarks = [];
 
-if (process.env.NODE_ENV === "development") {
+// if (process.env.NODE_ENV === "development") {
   host = "http://localhost:8080";
-} else {
-  host = "http://markjoy.herokuapp.com";
-}
+// } else {
+  // host = "http://markjoy.herokuapp.com";
+// }
 
 async function fetchUser() {
   const response = await fetch(`${host}/auth/me`, {
@@ -28,7 +28,9 @@ async function fetchUser() {
 window.onload = async () => {
   await fetchUser();
   // --> if user, render "Go to my page" on popup
-  // using document.getElementById().innerHTML
+  // using document.getElementById('auth').innerHTML =
+  // <a href=`${host}/home`>My Page</a>
+  // <a href=`${host}/auth`>Sign In</a>
 
   chrome.bookmarks.getTree(function (itemTree) {
     itemTree.forEach(function (item) {

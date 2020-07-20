@@ -3,9 +3,9 @@ let user;
 let chromeMarks = [];
 
 // if (process.env.NODE_ENV === "development") {
-host = "http://localhost:8080";
+// host = "http://localhost:8080";
 // } else {
-// host = "http://markjoy.herokuapp.com";
+host = "https://markjoy.herokuapp.com";
 // }
 
 async function fetchUser() {

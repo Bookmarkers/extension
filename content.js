@@ -1,14 +1,24 @@
-// enable redirect
+// Logic implementation: no one can block the redirect page cause it can cause infinite loop and doesn't make sense.
+// I.e. need to check if user is blocking our SPA page and/or the redirection page and not allow for it in the model?
+// logic problem 2: correctly match against the canonicalized URLs stored in bookmarks created with the bookmarks API.
+// i.e. trimming or adding of forward slashes for regexing the url later.
 
-let host;
-if (process.env.NODE_ENV === "development") {
-  host = "http://localhost:8080";
-} else {
-  host = "http://markjoy.herokuapp.com";
-}
+// very finnicky about where they are
+// findall then find one specific one
+// callback function for an event firing.
+// background script instead of the main content script?
+// popup.js
 
+// expecting a return promise
+// async await
+// pass in string for the gettree
+
+// const ourHost = "http://markjoy.herokuapp.com"
+const ourHost = 'http://localhost:8080'
+
+// modularize this function so it can be called when adding a blockedUrl
 function fetchUserBlocked() {
-  fetch(`${host}/auth/me`, {
+  fetch(`${ourHost}/auth/me`, {
     method: 'GET',
     headers: {
       Accept: 'application/json'
@@ -18,7 +28,7 @@ function fetchUserBlocked() {
     .then(text => (text ? JSON.parse(text) : {}))
     .then(user => {
       if (user.id) {
-        fetch(`${host}/api/blocked/user/${user.id}`, {
+        fetch(`${ourHost}/api/blocked/user/${user.id}`, {
           method: 'GET',
           headers: {
             Accept: 'application/json'
@@ -50,10 +60,21 @@ window.onload = function() {
 
   fetchUserBlocked()
 
+  // (async () => {
+  //   const src = chrome.runtime.getURL("fetchBlocks.js");
+  //   const contentMain = await import(src);
+  //   console.log(contentMain.fetchUserBlocked())
+  //   contentMain.fetchUserBlocked();
+  // })();
+
   const blockedUrls = window.localStorage.getItem('blockedUrls')
+
   if (blockedUrls) {
+    // console.log('blockedUrls string', blockedUrls)
+    // console.log('window.location.href', window.location.href)
     if (blockedUrls.indexOf(window.location.href) > -1) {
       window.location.replace('http://localhost:8080/home')
+      // alert("your url contains the name twitter");
     }
   }
 }

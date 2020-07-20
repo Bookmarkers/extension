@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <script defer src="popup.js"></script>
-    <style rel="stylesheet" src="popup.css"></style>
-  </head>
-  <body>
-    <div id="container">
-      <button type="button" id="do-sync">
-        SYNC IT UP
-      </button>
-      <button type="button" id="do-mark">
-        Marq it!
-      </button>
-      <button type="button" id="do-delete">
-        Delete it!
-      </button>
-      <div id="auth"></div>
-    </div>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <title>bookmarq</title>
+  <link href="popup.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+    <h3>🔖 Welcome to bookmarq! 🔖</h3>
+<button class="button" type="button" id="do-sync">SYNC!</button>
+<button class="button" type="button" id="do-mark">Marq it!</button>
+<button class="button" type="button" id="do-delete">Delete it!</button>
+<script src="popup.js"></script>
+<ul style="list-style: none;">
+  <div class="w3-padding w3-xlarge w3-text-black">
+<li><a href="http://markjoy.herokuapp.com/" target="_blank"><i class="material-icons">home</i>Home</li>
+</div>
+<div class="w3-padding w3-xlarge w3-text-black">
+<li><a href="http://markjoy.herokuapp.com/auth" target="_blank"><i class="material-icons">person</i>Sign In</li>
+</div>
+
+</ul>
+<p><a href="http://markjoy.herokuapp.com/auth" target="_blank">New user? Sign up here!</a></p>
+</body>
 </html>

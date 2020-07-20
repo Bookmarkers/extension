@@ -48,12 +48,13 @@ window.onload = async () => {
       chromeMarks.push({
         url: node.url,
         title: node.title,
-        imageUrl:
-          node.url[node.url.length - 1] === "/"
-            ? node.url + "favicon.ico"
-            : node.url + "/favicon.ico",
+        imageUrl: 'https://s2.googleusercontent.com/s2/favicons?domain_url=' + node.url,
+          // node.url[node.url.length - 1] === "/"
+          //   ? node.url + "favicon.ico"
+          //   : node.url + "/favicon.ico",
         userId: user.id,
         categoryId: 6,
+        createdAt: node.dateAdded
       });
     }
   }
@@ -122,7 +123,7 @@ function addingCallback(tabs) {
     title: currentTab.title,
     imageUrl: currentTab.favIconUrl,
     userId: user.id,
-    categoryId: 6,
+    categoryId: 6
   }).then((data) => {
     console.log(data);
   });
@@ -136,5 +137,12 @@ document.getElementById("do-delete").onclick = () => {
   chrome.tabs.query(current, deletingCallback);
 };
 
-document.getElementById("do-sync").onclick = () =>
-  massPostData(`${host}/api/bookmarks/bulk`, chromeMarks);
+document.getElementById("do-sync").onclick = async () => {
+  const response = await massPostData(`${host}/api/bookmarks/massbulk`, chromeMarks)
+  return response.json;
+  // if (chromeMarks.length < 300) {
+  //   massPostData(`${host}/api/bookmarks/bulk`, chromeMarks);
+  // } else {
+  //   massPostData(`${host}/api/bookmarks/massbulk`, chromeMarks)
+  // }
+}

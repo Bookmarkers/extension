@@ -13,68 +13,73 @@
 // async await
 // pass in string for the gettree
 
-const host = "https://markjoy.herokuapp.com"
+const host = "https://markjoy.herokuapp.com";
 // const host = 'http://localhost:8080'
 
 // modularize this function so it can be called when adding a blockedUrl
 function fetchUserBlocked() {
   fetch(`${host}/auth/me`, {
-    method: 'GET',
+    method: "GET",
     headers: {
-      Accept: 'application/json'
-    }
+      Accept: "application/json",
+    },
   })
-    .then(response => response.text())
-    .then(text => (text ? JSON.parse(text) : {}))
-    .then(user => {
+    .then((response) => response.text())
+    .then((text) => (text ? JSON.parse(text) : {}))
+    .then((user) => {
       if (user.id) {
         fetch(`${host}/api/blocked/user/${user.id}`, {
-          method: 'GET',
+          method: "GET",
           headers: {
-            Accept: 'application/json'
-          }
+            Accept: "application/json",
+          },
         })
-          .then(response => response.json())
-          .then(data => data.map(blocked => blocked.url))
-          .then(blockedUrls =>
+          .then((response) => response.json())
+          .then((data) => data.map((blocked) => blocked.url))
+          .then((blockedUrls) =>
             window.localStorage.setItem(
-              'blockedUrls',
+              "blockedUrls",
               JSON.stringify(blockedUrls)
             )
           )
-          .catch(error => console.log(error))
+          .catch((error) => console.log(error));
       } else {
-        throw Error("You're not logged into bookmarq.")
+        throw Error("You're not logged into bookmarq.");
       }
     })
-    .catch(error =>
+    .catch((error) =>
       console.error(
         "Dear bookmarq user, something went wrong and we couldn't fetch your blocked urls! Here is the error message: " +
           error
       )
-    )
+    );
 }
 
-window.onload = function() {
-  document.cookie = 'SameSite=None; Secure'
+window.onload = function () {
+  document.cookie = "SameSite=None; Secure";
 
-  fetchUserBlocked()
+  fetchUserBlocked();
 
-  // (async () => {
-  //   const src = chrome.runtime.getURL("fetchBlocks.js");
-  //   const contentMain = await import(src);
-  //   console.log(contentMain.fetchUserBlocked())
-  //   contentMain.fetchUserBlocked();
-  // })();
-
-  const blockedUrls = window.localStorage.getItem('blockedUrls')
+  const blockedUrls = window.localStorage.getItem("blockedUrls");
 
   if (blockedUrls) {
     // console.log('blockedUrls string', blockedUrls)
     // console.log('window.location.href', window.location.href)
     if (blockedUrls.indexOf(window.location.href) > -1) {
-      window.location.replace(`${host}/delay`)
+      window.location.replace(`${host}/delay`);
       // alert("your url contains the name twitter");
     }
   }
-}
+
+  if (window.location.href === `${host}/bookmarks`) {
+    document
+      .getElementById("import-bookmarks")
+      .addEventListener("click", async function () {
+        console.log("hi hello");
+        chrome.runtime.sendMessage({ greeting: "import" }, function (response) {
+          console.log(response.farewell);
+        });
+        window.location.replace(`${host}/importing`);
+      });
+  }
+};

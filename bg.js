@@ -1,14 +1,59 @@
-// chrome.runtime.onInstalled.addListener(function() {
-  // chrome.contextMenus.create({
-  //   "id": "sampleContextMenu",
-  //   "title": "Sample Context Menu",
-  //   "contexts": ["selection"]
-  // });
-// });
+let host = "https://markjoy.herokuapp.com";
+// let host = "http://localhost:8080";
+let user;
+let chromeMarks = [];
+
+async function fetchUser() {
+  const response = await fetch(`${host}/auth/me`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+  const text = await response.text();
+  if (text) {
+    user = await JSON.parse(text);
+  } else {
+    user = {};
+  }
+  return user;
+}
+
+async function massPostData(url, data) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
+function processNode(node) {
+  if (node.children) {
+    node.children.forEach(function (child) {
+      processNode(child);
+    });
+  }
+  if (node.url) {
+    chromeMarks.push({
+      url: node.url,
+      title: node.title,
+      imageUrl:
+        "https://s2.googleusercontent.com/s2/favicons?domain_url=" + node.url,
+      userId: user.id,
+      categoryId: 6,
+      createdAt: node.dateAdded,
+    });
+  }
+}
+
+// chrome.runtime.onInstalled.addListener(function () {
 
 // This will run when a bookmark is created.
 // chrome.bookmarks.onCreated.addListener(function() {
-  // post to bookmarq as well
+// post to bookmarq as well
 // });
 
 // // onBeforeNavigate -> onCommitted -> onDOMContentLoaded -> onCompleted
@@ -25,50 +70,34 @@
 //     });
 //   });
 
-// window.onload = function() {
-//     console.log(tree)
-// }
+async function importBookmarks() {
+  await fetchUser();
 
-// import model
-// bulk create with Promise.all
-// export bg function to UI page
-// maybe not even run it as a background script
-// check if able to run this script frontend??
-// import functionality of bg scripts into content or other pages?
+  chrome.bookmarks.getTree(function (itemTree) {
+    itemTree.forEach(function (item) {
+      processNode(item);
+    });
+  });
 
-// let chromeMarks = []
+  const response = await massPostData(
+    `${host}/api/bookmarks/massbulk`,
+    chromeMarks
+  );
+  console.log(response)
+  return response.json;
+}
 
-// chrome.bookmarks.getTree(function(itemTree) {
-//   itemTree.forEach(function(item) {
-//     processNode(item)
-//   })
-// })
-
-// function processNode(node) {
-//   // RECURSIN'
-//   if (node.children) {
-//     node.children.forEach(function(child) {
-//       processNode(child)
-//     })
-//   }
-//   // print leaf nodes URLs
-//   // IMPLEMENT : ADD THESE TO BOOKMARKS TABLE
-//   if (node.url) {
-//     console.log(node)
-//     //console.log(node.url)
-//     //console.log(node.favIconUrl)
-//     //console.log(node.title)
-//     // this is where we want to push each node.url + node.title into an array of objects.
-//     // array of objects somehow populates DB upon pressing a button.
-//     // end goal is not to console.log
-//     chromeMarks.push({
-//       url: node.url,
-//       title: node.title,
-//       imageUrl: node.url + 'favicon.ico'
-//     })
-//     // chrome marks is an array of objects.
-//   }
-//   // console.log(chromeMarks)
-// }
-
-// export default { chromeMarks }
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  console.log(
+    sender.tab
+      ? "from a content script:" + sender.tab.url
+      : "from the extension"
+  );
+  if (request.greeting == "import") {
+    chrome.runtime.getBackgroundPage(async function (backgroundPage) {
+      await importBookmarks();
+      sendResponse({ farewell: "goodbye" });
+    });
+    return true;
+  }
+});

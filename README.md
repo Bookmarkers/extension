@@ -1,4 +1,4 @@
-# Chrome extension for bookmarq
+# Chrome extension for ![bookmarq](https://github.com/Bookmarkers/markjoy)
 
 ## Installation
 1. Download this repository as a zip folder.

@@ -1,5 +1,6 @@
-This is your Chrome extension for bookmarq. To install,
+# Chrome extension for bookmarq
 
+## Installation
 1. Download this repository as a zip folder.
 2. Unzip.
 3. Go to "chrome://extensions".
@@ -7,4 +8,4 @@ This is your Chrome extension for bookmarq. To install,
 5. Click "Load unpacked".
 6. Select the entire folder.
 7. Check your extension icon on the right of the url bar.
-8. Enjoy marqitty marq!
+8. Save, delete, and import bookmarks on any tab!

@@ -55,10 +55,11 @@ window.onload = function () {
     document
       .getElementById("import-bookmarks")
       .addEventListener("click", async function () {
-        console.log("hi hello");
+        console.log("Importing bookmarks...");
         chrome.runtime.sendMessage({ greeting: "import" }, function (response) {
           console.log(response.farewell);
         });
+        console.log("Successfully imported bookmarks!");
         window.location.replace(`${host}/importing`);
       });
   }

@@ -38,16 +38,35 @@ function fetchUserBlocked() {
     );
 }
 
+function cleanUrl(url) {
+  if (url.startsWith("http://")) {
+    url = url.slice(7)
+  } else if (url.startsWith("https://")) {
+    url = url.slice(8)
+  }
+  return url
+}
+
 window.onload = function () {
   document.cookie = "SameSite=None; Secure";
 
   fetchUserBlocked();
 
-  const blockedUrls = window.localStorage.getItem("blockedUrls");
+  const blockedUrls = JSON.parse(window.localStorage.getItem("blockedUrls"));
 
   if (blockedUrls) {
-    if (blockedUrls.indexOf(window.location.href) > -1) {
-      window.location.replace(`${host}/delay`);
+    let currentLocation = cleanUrl(window.location.href)
+
+    for (let blockedUrl of blockedUrls) {
+      blockedUrl = cleanUrl(blockedUrl)
+
+      if (currentLocation.indexOf(blockedUrl) > -1) {
+        const lengthOfUrl = blockedUrl.length
+
+        if (currentLocation.slice(lengthOfUrl) === "" || "/?=".includes(currentLocation[lengthOfUrl])) {
+          window.location.replace(`${host}/delay`);
+        }
+      }
     }
   }
 

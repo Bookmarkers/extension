@@ -1,22 +1,5 @@
-// Logic implementation: no one can block the redirect page cause it can cause infinite loop and doesn't make sense.
-// I.e. need to check if user is blocking our SPA page and/or the redirection page and not allow for it in the model?
-// logic problem 2: correctly match against the canonicalized URLs stored in bookmarks created with the bookmarks API.
-// i.e. trimming or adding of forward slashes for regexing the url later.
-
-// very finnicky about where they are
-// findall then find one specific one
-// callback function for an event firing.
-// background script instead of the main content script?
-// popup.js
-
-// expecting a return promise
-// async await
-// pass in string for the gettree
-
 const host = "https://markjoy.herokuapp.com";
-// const host = 'http://localhost:8080'
 
-// modularize this function so it can be called when adding a blockedUrl
 function fetchUserBlocked() {
   fetch(`${host}/auth/me`, {
     method: "GET",
@@ -55,19 +38,35 @@ function fetchUserBlocked() {
     );
 }
 
+function cleanUrl(url) {
+  if (url.startsWith("http://")) {
+    url = url.slice(7)
+  } else if (url.startsWith("https://")) {
+    url = url.slice(8)
+  }
+  return url
+}
+
 window.onload = function () {
   document.cookie = "SameSite=None; Secure";
 
   fetchUserBlocked();
 
-  const blockedUrls = window.localStorage.getItem("blockedUrls");
+  const blockedUrls = JSON.parse(window.localStorage.getItem("blockedUrls"));
 
   if (blockedUrls) {
-    // console.log('blockedUrls string', blockedUrls)
-    // console.log('window.location.href', window.location.href)
-    if (blockedUrls.indexOf(window.location.href) > -1) {
-      window.location.replace(`${host}/delay`);
-      // alert("your url contains the name twitter");
+    let currentLocation = cleanUrl(window.location.href)
+
+    for (let blockedUrl of blockedUrls) {
+      blockedUrl = cleanUrl(blockedUrl)
+
+      if (currentLocation.indexOf(blockedUrl) > -1) {
+        const lengthOfUrl = blockedUrl.length
+
+        if (currentLocation.slice(lengthOfUrl) === "" || "/?=".includes(currentLocation[lengthOfUrl])) {
+          window.location.replace(`${host}/delay`);
+        }
+      }
     }
   }
 
@@ -75,10 +74,11 @@ window.onload = function () {
     document
       .getElementById("import-bookmarks")
       .addEventListener("click", async function () {
-        console.log("hi hello");
+        console.log("Importing bookmarks...");
         chrome.runtime.sendMessage({ greeting: "import" }, function (response) {
           console.log(response.farewell);
         });
+        console.log("Successfully imported bookmarks!");
         window.location.replace(`${host}/importing`);
       });
   }

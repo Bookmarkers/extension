@@ -1,12 +1,6 @@
-let host;
+let host = "https://markjoy.herokuapp.com";
 let user;
 let chromeMarks = [];
-
-// if (process.env.NODE_ENV === "development") {
-// host = "http://localhost:8080";
-// } else {
-host = "https://markjoy.herokuapp.com";
-// }
 
 async function fetchUser() {
   const response = await fetch(`${host}/auth/me`, {
@@ -27,10 +21,6 @@ async function fetchUser() {
 
 window.onload = async () => {
   await fetchUser();
-  // --> if user, render "Go to my page" on popup
-  // using document.getElementById('auth').innerHTML =
-  // <a href=`${host}/home`>My Page</a>
-  // <a href=`${host}/auth`>Sign In</a>
 
   chrome.bookmarks.getTree(function (itemTree) {
     itemTree.forEach(function (item) {
@@ -49,9 +39,6 @@ window.onload = async () => {
         url: node.url,
         title: node.title,
         imageUrl: 'https://s2.googleusercontent.com/s2/favicons?domain_url=' + node.url,
-          // node.url[node.url.length - 1] === "/"
-          //   ? node.url + "favicon.ico"
-          //   : node.url + "/favicon.ico",
         userId: user.id,
         categoryId: 6,
         createdAt: node.dateAdded
@@ -138,11 +125,6 @@ document.getElementById("do-delete").onclick = () => {
 };
 
 document.getElementById("do-sync").onclick = async () => {
-  const response = await massPostData(`${host}/api/bookmarks/massbulk`, chromeMarks)
+  const response = await massPostData(`${host}/api/bookmarks/bulk`, chromeMarks)
   return response.json;
-  // if (chromeMarks.length < 300) {
-  //   massPostData(`${host}/api/bookmarks/bulk`, chromeMarks);
-  // } else {
-  //   massPostData(`${host}/api/bookmarks/massbulk`, chromeMarks)
-  // }
 }

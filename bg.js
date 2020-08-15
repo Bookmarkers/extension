@@ -1,5 +1,4 @@
 let host = "https://markjoy.herokuapp.com";
-// let host = "http://localhost:8080";
 let user;
 let chromeMarks = [];
 
@@ -48,27 +47,6 @@ function processNode(node) {
     });
   }
 }
-
-// chrome.runtime.onInstalled.addListener(function () {
-
-// This will run when a bookmark is created.
-// chrome.bookmarks.onCreated.addListener(function() {
-// post to bookmarq as well
-// });
-
-// // onBeforeNavigate -> onCommitted -> onDOMContentLoaded -> onCompleted
-// chrome.webNavigation.onCompleted.addListener(function() {
-//   // redirect
-// }, {url: [{urlMatches : 'https://www.google.com/'}]});
-
-// background script to check if the current url === database blockedUrl
-// if it matches object[url] window.replace('spapage.com')
-
-// const tree = chrome.bookmarks.getRecent(20, function(items) {
-//     items.forEach(function(item) {
-//       document.write(item.url);
-//     });
-//   });
 
 async function importBookmarks() {
   await fetchUser();
